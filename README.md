@@ -1,71 +1,90 @@
-# Mosaic ORM
 
-A simple, universal Python ORM for SQL databases (SQLite, MySQL, PostgreSQL) with beginner-friendly syntax and multi-table support.
 
-## Features
-- Simple dict-based schema and CRUD API
-- Multi-database support: SQLite, MySQL, PostgreSQL
-- Multi-table creation and foreign key relationships
-- Unified API for all backends
-- Automatic connection management
-- Custom exceptions for errors
+<p align="center">
+	<img src="logo.png" alt="Mosaic ORM Logo" width="180"/>
+</p>
 
-## Quickstart
 
-### Install dependencies
+# MosaicDB
+
+Universal, framework-independent ORM for Python.
+
+---
+
+## Getting Started
+
+```python
+from pydantic import BaseModel
+from mosaicdb import Mosaic
+from mosaicdb.models import ModelMixin
+
+class User(BaseModel, ModelMixin):
+	id: int
+	name: str
+	age: int
+
+db = Mosaic("sqlite:///test.db")
+User.create_table(db)
+User.insert(db, User(id=1, name="Alice", age=30))
+users = User.find(db)
+print(users)
+```
+
+---
+
+## Features Table
+| Feature                | Supported |
+|------------------------|-----------|
+| Simple Syntax          | ✅        |
+| Multi-DB Support       | ✅        |
+| Multi-Table/FK         | ✅        |
+| Auto Migrations        | ✅        |
+| CLI                    | ✅        |
+| Typesafe Models        | ✅        |
+| NoSQL (MongoDB)        | ✅        |
+| Error Handling         | ✅        |
+| Test Coverage          | ✅        |
+
+---
+
+## Database Support Matrix
+| Database    | CRUD | FKs | Migrations | CLI | Typesafe Models |
+|-------------|------|-----|------------|-----|-----------------|
+| SQLite      | ✅   | ✅  | ✅         | ✅  | ✅              |
+| MySQL       | ✅   | ✅  | ✅         | ✅  | ✅              |
+| PostgreSQL  | ✅   | ✅  | ✅         | ✅  | ✅              |
+| MongoDB     | ✅   | ❌  | Schemaless | ✅  | ✅              |
+
+---
+
+## CLI Command Examples
+
 ```bash
-pip install mysql-connector-python psycopg2
+mosaicdb makemigrations users --db sqlite:///test.db --schema '{"id": "int", "name": "str"}'
+mosaicdb migrate users --db sqlite:///test.db
+mosaicdb create-table users --db sqlite:///test.db --schema '{"id": "int", "name": "str"}'
+mosaicdb drop-table users --db sqlite:///test.db
+mosaicdb inspect-schema users --db sqlite:///test.db
+mosaicdb seed users --db sqlite:///test.db --data '{"id": 1, "name": "Alice"}'
+mosaicdb raw-sql --db sqlite:///test.db --sql "SELECT * FROM users"
 ```
 
-### Example usage
-```python
-from mosaic import Mosaic
+---
 
-# SQLite
-sqlite_db = Mosaic("sqlite:///test.db")
+## Versioning & Changelog
+- Current version: **v0.1.0-alpha**
+- See `CHANGELOG.md` for updates.
 
-# MySQL
-mysql_db = Mosaic("mysql://root:@localhost:3306/mosaic_test")
+---
 
-# PostgreSQL
-pg_db = Mosaic("postgres://user:password@localhost:5432/mosaic_test")
 
-# Create tables
-sqlite_db.create_table("users", {"id": "int", "name": "str"})
-sqlite_db.create_table("orders", {"id": "int", "user_id": "int->users.id", "amount": "float"})
+## PyPI Installation
 
-# Insert data
-alice_id = sqlite_db.insert("users", {"name": "Alice"})
-sqlite_db.insert("orders", {"user_id": alice_id, "amount": 100.0})
-
-# Query data
-print(sqlite_db.find("users"))
-print(sqlite_db.find("orders"))
-
-sqlite_db.close()
+```bash
+pip install mosaicdb
 ```
 
-## Foreign Key Syntax
-Declare foreign keys in your schema using:
-```python
-"user_id": "int->users.id"
-```
-This creates a foreign key from `orders.user_id` to `users.id`.
-
-## Examples
-- See `examples/sqlite_multi_table.py` for SQLite multi-table usage
-- See `examples/postgres_multi_table.py` for PostgreSQL multi-table usage
-- See `tests/test_multi_table.py` for MySQL multi-table and FK enforcement
-
-## Extending Mosaic
-- Add new drivers by subclassing `BaseDriver` in `mosaic/core/base.py`
-- Add selection logic in `mosaic/orm.py`
-
-## Roadmap
-- Joins and advanced queries
-- Typesafe models
-- NoSQL support
-- Built-in migrations
+---
 
 ## License
 MIT

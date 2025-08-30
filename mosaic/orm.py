@@ -33,6 +33,9 @@ class Mosaic:
         elif url.startswith("postgres://"):
             from .core.postgres_driver import PostgresDriver
             return PostgresDriver(url)
+        elif url.startswith("mongodb://"):
+            from .core.mongo_driver import MongoDriver
+            return MongoDriver(url)
         raise UnsupportedDriverError(f"No driver for URL: {url}")
 
     # passthrough methods (thin layer)

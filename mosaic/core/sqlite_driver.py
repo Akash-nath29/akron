@@ -83,6 +83,13 @@ class SQLiteDriver(BaseDriver):
         try:
             self.cur.execute(sql, params)
             self.conn.commit()
+        except sqlite3.IntegrityError as e:
+            msg = str(e)
+            if "UNIQUE constraint failed" in msg:
+                raise MosaicError(f"Duplicate entry on unique field: {msg}")
+            if "FOREIGN KEY constraint failed" in msg:
+                raise MosaicError(f"Foreign key constraint failed: {msg}")
+            raise MosaicError(msg)
         except sqlite3.OperationalError as e:
             msg = str(e).lower()
             if "no such table" in msg:
