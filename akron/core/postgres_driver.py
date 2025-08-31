@@ -1,10 +1,10 @@
-"""PostgreSQL driver for mosaic."""
+"""PostgreSQL driver for akron."""
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from typing import Dict, Any, Optional, List, Tuple
 from ..core.base import BaseDriver
-from ..exceptions import MosaicError, TableNotFoundError
+from ..exceptions import AkronError, TableNotFoundError
 
 class PostgresDriver(BaseDriver):
     def __init__(self, db_url: str):
@@ -13,7 +13,7 @@ class PostgresDriver(BaseDriver):
         pattern = r"postgres://(.*?):(.*?)@(.*?):(.*?)/(.*?)$"
         match = re.match(pattern, db_url)
         if not match:
-            raise MosaicError("Invalid Postgres URL format")
+            raise AkronError("Invalid Postgres URL format")
         user, password, host, port, database = match.groups()
         self.conn = psycopg2.connect(
             user=user,

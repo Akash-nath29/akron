@@ -1,9 +1,9 @@
-"""Simple example demonstrating mosaic usage (SQLite)."""
+"""Simple example demonstrating Akron usage (SQLite)."""
 
-from mosaic import Mosaic
+from akron import Akron
 
 def run_example():
-    db = Mosaic("sqlite://database.db")  # in-memory DB for demo
+    db = Akron("sqlite://database.db")  # in-memory DB for demo
 
     # 1. Create table
     db.create_table("users", {"id": "int", "name": "str", "age": "int"})

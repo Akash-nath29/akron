@@ -1,9 +1,9 @@
-"""MySQL driver for mosaic."""
+"""MySQL driver for akron."""
 
 import mysql.connector
 from typing import Dict, Any, Optional, List, Tuple
-from ..core.base import BaseDriver
-from ..exceptions import MosaicError, TableNotFoundError
+from .base import BaseDriver
+from ..exceptions import AkronError, TableNotFoundError
 
 class MySQLDriver(BaseDriver):
     def __init__(self, db_url: str):
@@ -13,7 +13,7 @@ class MySQLDriver(BaseDriver):
         pattern = r"mysql://(.*?):(.*?)@(.*?):(.*?)/(.*?)$"
         match = re.match(pattern, db_url)
         if not match:
-            raise MosaicError("Invalid MySQL URL format")
+            raise AkronError("Invalid MySQL URL format")
         user, password, host, port, database = match.groups()
         self.conn = mysql.connector.connect(
             user=user,
@@ -58,10 +58,10 @@ class MySQLDriver(BaseDriver):
         except Exception as e:
             msg = str(e)
             if "Duplicate entry" in msg or "1062" in msg:
-                raise MosaicError(f"Duplicate entry on unique field: {msg}")
+                raise AkronError(f"Duplicate entry on unique field: {msg}")
             if "foreign key constraint fails" in msg or "1452" in msg:
-                raise MosaicError(f"Foreign key constraint failed: {msg}")
-            raise MosaicError(msg)
+                raise AkronError(f"Foreign key constraint failed: {msg}")
+            raise AkronError(msg)
         return self.cur.lastrowid
 
     def find(self, table_name: str, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:

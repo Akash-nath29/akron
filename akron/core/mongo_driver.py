@@ -1,19 +1,19 @@
-"""MongoDB driver for mosaic."""
+"""MongoDB driver for akron."""
 
 from pymongo import MongoClient
 from typing import Dict, Any, Optional, List
-from ..core.base import BaseDriver
-from ..exceptions import MosaicError
+from .base import BaseDriver
+from ..exceptions import AkronError
 
 class MongoDriver(BaseDriver):
     def __init__(self, db_url: str):
         """db_url format: mongodb://host:port/dbname"""
-        # Example: mongodb://localhost:27017/mosaic_test
+        # Example: mongodb://localhost:27017/akron_test
         import re
         pattern = r"mongodb://(.*?):(\d+)/(.*?)$"
         match = re.match(pattern, db_url)
         if not match:
-            raise MosaicError("Invalid MongoDB URL format")
+            raise AkronError("Invalid MongoDB URL format")
         host, port, database = match.groups()
         self.client = MongoClient(host, int(port))
         self.db = self.client[database]

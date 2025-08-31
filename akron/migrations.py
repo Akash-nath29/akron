@@ -1,4 +1,4 @@
-"""Mosaic migration manager: auto schema tracking and migrations."""
+"""Akron migration manager: auto schema tracking and migrations."""
 import json
 import os
 from typing import Dict, Any, List
@@ -62,7 +62,7 @@ class MigrationManager:
         steps = migration["steps"]
         # Create migration history table if not exists
         if hasattr(driver, "conn") and hasattr(driver, "cur"):
-            driver.cur.execute("CREATE TABLE IF NOT EXISTS _mosaic_migrations (id INTEGER PRIMARY KEY AUTOINCREMENT, table_name TEXT, migration_file TEXT, applied_at TEXT)")
+            driver.cur.execute("CREATE TABLE IF NOT EXISTS _akron_migrations (id INTEGER PRIMARY KEY AUTOINCREMENT, table_name TEXT, migration_file TEXT, applied_at TEXT)")
             driver.conn.commit()
             try:
                 driver.conn.execute("BEGIN")
@@ -76,7 +76,7 @@ class MigrationManager:
                     elif step["action"] == "change_type":
                         print(f"Type change for column {step['column']} from {step['from']} to {step['to']} not supported natively. Manual intervention required.")
                 driver.conn.commit()
-                driver.cur.execute("INSERT INTO _mosaic_migrations (table_name, migration_file, applied_at) VALUES (?, ?, datetime('now'))", (table_name, fname))
+                driver.cur.execute("INSERT INTO _akron_migrations (table_name, migration_file, applied_at) VALUES (?, ?, datetime('now'))", (table_name, fname))
                 driver.conn.commit()
                 print(f"Migrated {table_name} to new schema.")
             except Exception as e:

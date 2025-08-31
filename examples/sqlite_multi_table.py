@@ -1,9 +1,9 @@
 """Example: SQLite multi-table and foreign key usage."""
 
-from mosaic import Mosaic
+from akron import Akron
 
 def run_example():
-    db = Mosaic("sqlite:///:memory:")
+    db = Akron("sqlite:///:memory:")
     db.create_table("users", {"id": "int", "name": "str"})
     db.create_table("orders", {"id": "int", "user_id": "int->users.id", "amount": "float"})
     alice_id = db.insert("users", {"name": "Alice"})

@@ -1,11 +1,12 @@
 
 
 <p align="center">
-	<img src="https://res.cloudinary.com/dclp2h92a/image/upload/v1756577773/ChatGPT_Image_Aug_30_2025_11_01_26_PM_i6o5k7.png" alt="Mosaic ORM Logo" width="180"/>
+	<img src="https://res.cloudinary.com/dclp2h92a/image/upload/v1756577773/ChatGPT_Image_Aug_30_2025_11_01_26_PM_i6o5k7.png" alt="Akron ORM Logo" width="180"/>
 </p>
 
 
-# MosaicDB
+
+# Akron
 
 Universal, framework-independent ORM for Python.
 
@@ -15,15 +16,16 @@ Universal, framework-independent ORM for Python.
 
 ```python
 from pydantic import BaseModel
-from mosaicdb import Mosaic
-from mosaicdb.models import ModelMixin
+
+from akron import Akron
+from akron.models import ModelMixin
 
 class User(BaseModel, ModelMixin):
 	id: int
 	name: str
 	age: int
 
-db = Mosaic("sqlite:///test.db")
+db = Akron("sqlite:///test.db")
 User.create_table(db)
 User.insert(db, User(id=1, name="Alice", age=30))
 users = User.find(db)
@@ -60,19 +62,19 @@ print(users)
 ## CLI Command Examples
 
 ```bash
-mosaicdb makemigrations users --db sqlite:///test.db --schema '{"id": "int", "name": "str"}'
-mosaicdb migrate users --db sqlite:///test.db
-mosaicdb create-table users --db sqlite:///test.db --schema '{"id": "int", "name": "str"}'
-mosaicdb drop-table users --db sqlite:///test.db
-mosaicdb inspect-schema users --db sqlite:///test.db
-mosaicdb seed users --db sqlite:///test.db --data '{"id": 1, "name": "Alice"}'
-mosaicdb raw-sql --db sqlite:///test.db --sql "SELECT * FROM users"
+akron makemigrations users --db sqlite:///test.db --schema '{"id": "int", "name": "str"}'
+akron migrate users --db sqlite:///test.db
+akron create-table users --db sqlite:///test.db --schema '{"id": "int", "name": "str"}'
+akron drop-table users --db sqlite:///test.db
+akron inspect-schema users --db sqlite:///test.db
+akron seed users --db sqlite:///test.db --data '{"id": 1, "name": "Alice"}'
+akron raw-sql --db sqlite:///test.db --sql "SELECT * FROM users"
 ```
 
 ---
 
 ## Versioning & Changelog
-- Current version: **v0.1.0-alpha**
+- Current version: **v0.1.1**
 - See `CHANGELOG.md` for updates.
 
 ---
@@ -81,10 +83,10 @@ mosaicdb raw-sql --db sqlite:///test.db --sql "SELECT * FROM users"
 ## PyPI Installation
 
 ```bash
-pip install mosaicdb
+pip install akron
 ```
 
 ---
 
 ## License
-MIT
+[MIT](LICENSE)

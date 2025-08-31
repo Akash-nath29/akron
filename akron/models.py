@@ -1,4 +1,4 @@
-"""Typesafe model support for Mosaic using Pydantic."""
+"""Typesafe model support for Akron using Pydantic."""
 from pydantic import BaseModel, Field
 from typing import Type, Dict, Any
 

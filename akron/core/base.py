@@ -1,4 +1,4 @@
-"""Abstract base driver for mosaic drivers."""
+"""Abstract base driver for akron drivers."""
 
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional, List

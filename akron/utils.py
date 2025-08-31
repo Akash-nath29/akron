@@ -1,4 +1,4 @@
-"""Utility helpers for mosaic."""
+"""Utility helpers for Akron."""
 
 from typing import Any
 

@@ -1,16 +1,17 @@
-"""User-facing entry point for mosaic."""
+
+"""User-facing entry point for Akron."""
 
 from typing import Dict, Optional, Any
 from .core.sqlite_driver import SQLiteDriver
 from .exceptions import UnsupportedDriverError
 
 
-class Mosaic:
+class Akron:
     """
     Main entrypoint for users.
 
     Usage:
-        db = Mosaic("sqlite:///test.db")
+        db = Akron("sqlite:///test.db")
         db.create_table("users", {"id": "int", "name": "str", "age": "int"})
         db.insert("users", {"name": "Akash", "age": 19})
         db.find("users")
@@ -19,7 +20,7 @@ class Mosaic:
         db.close()
     """
 
-    def __init__(self, db_url: str = "sqlite:///mosaic.db"):
+    def __init__(self, db_url: str = "sqlite:///akron.db"):
         self.db_url = db_url
         self.driver = self._choose_driver(db_url)
 

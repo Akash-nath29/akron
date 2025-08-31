@@ -1,9 +1,9 @@
 """Example: PostgreSQL multi-table and foreign key usage."""
 
-from mosaic import Mosaic
+from akron import Akron
 
 def run_example():
-    db = Mosaic("postgres://user:password@localhost:5432/mosaic_test")
+    db = Akron("postgres://user:password@localhost:5432/akron_test")
     db.create_table("users", {"id": "int", "name": "str"})
     db.create_table("orders", {"id": "int", "user_id": "int->users.id", "amount": "float"})
     alice_id = db.insert("users", {"name": "Alice"})

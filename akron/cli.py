@@ -1,11 +1,11 @@
-"""Mosaic CLI for migration management."""
+"""Akron CLI for migration management."""
 import argparse
-from mosaic import Mosaic
-from mosaic.migrations import MigrationManager
+from akron import Akron
+from akron.migrations import MigrationManager
 import sys
 
 
-parser = argparse.ArgumentParser(description="Mosaic ORM CLI")
+parser = argparse.ArgumentParser(description="Akron ORM CLI")
 parser.add_argument("action", choices=[
     "makemigrations", "migrate", "showmigrations",
     "create-table", "drop-table", "inspect-schema", "seed", "raw-sql"
@@ -19,7 +19,7 @@ parser.add_argument("--sql", help="Raw SQL to execute")
 args = parser.parse_args()
 
 def main():
-    db = Mosaic(args.db)
+    db = Akron(args.db)
     mgr = MigrationManager(db)
     import json
     if args.action == "makemigrations":
@@ -33,7 +33,7 @@ def main():
     elif args.action == "showmigrations":
         driver = db.driver
         if hasattr(driver, "conn") and hasattr(driver, "cur"):
-            driver.cur.execute("SELECT * FROM _mosaic_migrations WHERE table_name=?", (args.table,))
+            driver.cur.execute("SELECT * FROM _akron_migrations WHERE table_name=?", (args.table,))
             for row in driver.cur.fetchall():
                 print(row)
         else:

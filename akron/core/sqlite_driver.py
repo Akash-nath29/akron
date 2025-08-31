@@ -1,22 +1,22 @@
-"""SQLite driver for mosaic."""
+"""SQLite driver for akron."""
 
 import sqlite3
 from typing import Dict, Any, Optional, List, Tuple
-from ..core.base import BaseDriver
+from .base import BaseDriver
 from ..utils import map_type, sanitize_identifier
-from ..exceptions import MosaicError, TableNotFoundError
+from ..exceptions import AkronError, TableNotFoundError
 
 
 class SQLiteDriver(BaseDriver):
     def __init__(self, db_url: str):
         """db_url format: sqlite:///path/to/db or sqlite:///:memory:"""
         if not db_url.startswith("sqlite://"):
-            raise MosaicError("SQLiteDriver requires sqlite:// URL")
+            raise AkronError("SQLiteDriver requires sqlite:// URL")
         # support sqlite:///file.db and sqlite:///:memory:
         path = db_url.replace("sqlite://", "")
-        # when path empty -> default to mosaic.db
+        # when path empty -> default to akron.db
         if path in ("", "/"):
-            path = "mosaic.db"
+            path = "akron.db"
         # handle in-memory database for both ':memory:' and '/:memory:'
         if path in (":memory:", "/:memory:"):
             self._path = ":memory:"
@@ -36,7 +36,7 @@ class SQLiteDriver(BaseDriver):
             msg = str(e).lower()
             if "no such table" in msg:
                 raise TableNotFoundError(msg)
-            raise MosaicError(str(e))
+            raise AkronError(str(e))
 
     def create_table(self, table_name: str, schema: Dict[str, str]) -> None:
         """
@@ -45,7 +45,7 @@ class SQLiteDriver(BaseDriver):
         Example: {"user_id": "int->users.id"}
         """
         if not schema or not isinstance(schema, dict):
-            raise MosaicError("schema must be a non-empty dict")
+            raise AkronError("schema must be a non-empty dict")
 
         tname = sanitize_identifier(table_name)
         cols = []
@@ -73,7 +73,7 @@ class SQLiteDriver(BaseDriver):
 
     def insert(self, table_name: str, data: Dict[str, Any]) -> int:
         if not data or not isinstance(data, dict):
-            raise MosaicError("data must be a non-empty dict")
+            raise AkronError("data must be a non-empty dict")
         tname = sanitize_identifier(table_name)
         keys = [sanitize_identifier(k) for k in data.keys()]
         placeholders = ", ".join(["?"] * len(keys))
@@ -86,15 +86,15 @@ class SQLiteDriver(BaseDriver):
         except sqlite3.IntegrityError as e:
             msg = str(e)
             if "UNIQUE constraint failed" in msg:
-                raise MosaicError(f"Duplicate entry on unique field: {msg}")
+                raise AkronError(f"Duplicate entry on unique field: {msg}")
             if "FOREIGN KEY constraint failed" in msg:
-                raise MosaicError(f"Foreign key constraint failed: {msg}")
-            raise MosaicError(msg)
+                raise AkronError(f"Foreign key constraint failed: {msg}")
+            raise AkronError(msg)
         except sqlite3.OperationalError as e:
             msg = str(e).lower()
             if "no such table" in msg:
                 raise TableNotFoundError(msg)
-            raise MosaicError(str(e))
+            raise AkronError(str(e))
         return self.cur.lastrowid
 
     def find(self, table_name: str, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
@@ -103,7 +103,7 @@ class SQLiteDriver(BaseDriver):
         params: Tuple = ()
         if filters:
             if not isinstance(filters, dict):
-                raise MosaicError("filters must be a dict")
+                raise akronError("filters must be a dict")
             conds = []
             for k in filters.keys():
                 conds.append(f"{sanitize_identifier(k)} = ?")
@@ -116,7 +116,7 @@ class SQLiteDriver(BaseDriver):
             msg = str(e).lower()
             if "no such table" in msg:
                 raise TableNotFoundError(msg)
-            raise MosaicError(str(e))
+            raise AkronError(str(e))
 
         columns = [d[0] for d in self.cur.description] if self.cur.description else []
         rows = self.cur.fetchall()
@@ -124,9 +124,9 @@ class SQLiteDriver(BaseDriver):
 
     def update(self, table_name: str, filters: Dict[str, Any], new_values: Dict[str, Any]) -> int:
         if not filters or not isinstance(filters, dict):
-            raise MosaicError("filters must be a non-empty dict for update")
+            raise AkronError("filters must be a non-empty dict for update")
         if not new_values or not isinstance(new_values, dict):
-            raise MosaicError("new_values must be a non-empty dict for update")
+            raise AkronError("new_values must be a non-empty dict for update")
         tname = sanitize_identifier(table_name)
         set_clause = ", ".join(f"{sanitize_identifier(k)} = ?" for k in new_values.keys())
         where_clause = " AND ".join(f"{sanitize_identifier(k)} = ?" for k in filters.keys())
@@ -139,12 +139,12 @@ class SQLiteDriver(BaseDriver):
             msg = str(e).lower()
             if "no such table" in msg:
                 raise TableNotFoundError(msg)
-            raise MosaicError(str(e))
+            raise AkronError(str(e))
         return self.cur.rowcount
 
     def delete(self, table_name: str, filters: Dict[str, Any]) -> int:
         if not filters or not isinstance(filters, dict):
-            raise MosaicError("filters must be a non-empty dict for delete")
+            raise AkronError("filters must be a non-empty dict for delete")
         tname = sanitize_identifier(table_name)
         where_clause = " AND ".join(f"{sanitize_identifier(k)} = ?" for k in filters.keys())
         sql = f"DELETE FROM {tname} WHERE {where_clause}"
@@ -156,7 +156,7 @@ class SQLiteDriver(BaseDriver):
             msg = str(e).lower()
             if "no such table" in msg:
                 raise TableNotFoundError(msg)
-            raise MosaicError(str(e))
+            raise AkronError(str(e))
         return self.cur.rowcount
 
     def close(self):

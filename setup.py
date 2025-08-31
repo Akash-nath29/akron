@@ -4,14 +4,14 @@ with open("README.md", "r", encoding="utf-8") as f:
     long_description = f.read()
 
 setup(
-    name="mosaicdb",
-    version="0.1.1",
+    name="akron",
+    version="0.1.5",
     description="Universal, framework-independent ORM for Python.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Akash Nath",
     author_email="anath5440@gmail.com",
-    url="https://github.com/Akash-nath29/mosaic",
+    url="https://github.com/Akash-nath29/akron",
     license="MIT",
     packages=find_packages(),
     install_requires=[
@@ -22,7 +22,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "mosaicdb=mosaic.cli:main"
+            "akron=akron.cli:main"
         ]
     },
     python_requires='>=3.7',

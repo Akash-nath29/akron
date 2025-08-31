@@ -1,4 +1,4 @@
-# Changelog for Mosaic ORM
+# Changelog for akron ORM
 
 ## v0.1.0-alpha (2025-08-30)
 - Initial release
