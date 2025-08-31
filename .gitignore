@@ -9,3 +9,4 @@ akron.egg-info/*
 dist/*
 build/*
 .github/*
+next_update.md
