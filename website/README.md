@@ -1,4 +1,4 @@
-# Akron ORM Website
+# Akron ORM 
 
 This is the official website for Akron ORM, built with Next.js 15 and Tailwind CSS.
 
