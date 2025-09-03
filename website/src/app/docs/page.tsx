@@ -1,668 +1,403 @@
-"use client";
-
-import Image from "next/image";
+import { DocsLayout, PreCodeBlock, OutputBlock, CodeBlock } from "../../components/DocsLayout";
 import Link from "next/link";
-import { useState } from "react";
-
-interface CopyButtonProps {
-  text: string;
-  className?: string;
-}
-
-function CopyButton({ text, className = "" }: CopyButtonProps) {
-  const [copied, setCopied] = useState(false);
-
-  const copyToClipboard = async () => {
-    try {
-      // Try modern clipboard API first
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(text);
-      } else {
-        // Fallback method for older browsers or non-secure contexts
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        document.execCommand('copy');
-        textArea.remove();
-      }
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
-      // Still show copied state even if copy failed to prevent confusion
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  return (
-    <button
-      onClick={copyToClipboard}
-      className={`p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded transition-colors ${className}`}
-      title={copied ? "Copied!" : "Copy to clipboard"}
-    >
-      {copied ? (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-        </svg>
-      ) : (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-        </svg>
-      )}
-    </button>
-  );
-}
-
-interface CodeBlockProps {
-  children: string;
-  showCopy?: boolean;
-  className?: string;
-}
-
-function CodeBlock({ children, showCopy = true, className = "" }: CodeBlockProps) {
-  return (
-    <div className={`bg-gray-50 border border-gray-200 rounded-lg p-4 relative flex items-center justify-between mb-4 ${className}`}>
-      <code className="text-gray-800 text-sm font-mono flex-1">{children}</code>
-      {showCopy && <CopyButton text={children} className="ml-4 flex-shrink-0" />}
-    </div>
-  );
-}
-
-function PreCodeBlock({ children, showCopy = true }: { children: string; showCopy?: boolean }) {
-  return (
-    <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 overflow-x-auto relative">
-      <pre className="text-gray-800 text-sm">{children}</pre>
-      {showCopy && <CopyButton text={children} className="absolute top-4 right-4" />}
-    </div>
-  );
-}
 
 export default function DocsPage() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="border-b border-gray-200 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" className="flex items-center">
-              <Image
-                src="/logo.png"
-                alt="Akron ORM"
-                width={40}
-                height={40}
-                className="mr-3"
-              />
-              <span className="text-xl font-bold text-gray-900">Akron ORM</span>
-            </Link>
-            <div className="flex space-x-8">
-              <Link href="/docs" className="text-blue-600 px-3 py-2 text-sm font-medium flex items-center">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Documentation
-              </Link>
-              <Link href="https://github.com/Akash-nath29/akron" className="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium flex items-center">
-                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-                GitHub
-              </Link>
-            </div>
-          </div>
+    <DocsLayout 
+      title="Akron ORM Documentation" 
+      description="Complete guide to using Akron ORM - the universal Python ORM supporting SQLite, MySQL, PostgreSQL, and MongoDB with a unified API."
+    >
+      <section className="mb-12">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Welcome to Akron ORM
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            A universal Python ORM that provides a consistent, type-safe API across SQLite, MySQL, 
+            PostgreSQL, and MongoDB. Build database applications with confidence and flexibility.
+          </p>
         </div>
-      </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex gap-8">
-          {/* Sidebar */}
-          <div className="w-64 flex-shrink-0">
-            <div className="sticky top-8">
-              <nav className="space-y-2">
-                <div className="pb-4">
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                    Getting Started
-                  </h3>
-                  <ul className="mt-2 space-y-1">
-                    <li><a href="#installation" className="text-gray-600 hover:text-blue-600 text-sm">Installation</a></li>
-                    <li><a href="#quick-start" className="text-gray-600 hover:text-blue-600 text-sm">Quick Start</a></li>
-                    <li><a href="#basic-usage" className="text-gray-600 hover:text-blue-600 text-sm">Basic Usage</a></li>
-                  </ul>
-                </div>
-                <div className="pb-4">
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-                    </svg>
-                    Database Support
-                  </h3>
-                  <ul className="mt-2 space-y-1">
-                    <li><a href="#sqlite" className="text-gray-600 hover:text-blue-600 text-sm">SQLite</a></li>
-                    <li><a href="#mysql" className="text-gray-600 hover:text-blue-600 text-sm">MySQL</a></li>
-                    <li><a href="#postgresql" className="text-gray-600 hover:text-blue-600 text-sm">PostgreSQL</a></li>
-                    <li><a href="#mongodb" className="text-gray-600 hover:text-blue-600 text-sm">MongoDB</a></li>
-                  </ul>
-                </div>
-                <div className="pb-4">
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
-                    CLI Reference
-                  </h3>
-                  <ul className="mt-2 space-y-1">
-                    <li><a href="#cli-commands" className="text-gray-600 hover:text-blue-600 text-sm">Commands</a></li>
-                    <li><a href="#migrations" className="text-gray-600 hover:text-blue-600 text-sm">Migrations</a></li>
-                  </ul>
-                </div>
-                <div className="pb-4">
-                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                    </svg>
-                    API Reference
-                  </h3>
-                  <ul className="mt-2 space-y-1">
-                    <li><a href="#models" className="text-gray-600 hover:text-blue-600 text-sm">Models</a></li>
-                    <li><a href="#crud-operations" className="text-gray-600 hover:text-blue-600 text-sm">CRUD Operations</a></li>
-                  </ul>
-                </div>
-              </nav>
-            </div>
-          </div>
+        <div className="bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 rounded-lg p-6 mb-8">
+          <h2 className="text-lg font-semibold text-orange-900 mb-3">🚀 Quick Start</h2>
+          <PreCodeBlock>
+{`# Install Akron
+pip install akron
 
-          {/* Main Content */}
-          <div className="flex-1 max-w-4xl">
-            <div className="prose prose-lg max-w-none">
-              <div className="text-center mb-12">
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">Akron ORM Documentation</h1>
-                <div className="border border-gray-200 rounded-lg p-6 mb-8 bg-gray-50">
-                  <p className="text-lg text-gray-700 mb-2">
-                    Welcome to the most universal Python ORM you&apos;ll ever need.
-                  </p>
-                  <p className="text-gray-600">
-                    Whether you&apos;re using SQLite, MySQL, PostgreSQL, or MongoDB - we&apos;ve got you covered.
-                  </p>
-                </div>
-              </div>
-              
-              <section id="installation" className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-                  <svg className="w-6 h-6 mr-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  Installation
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  Install Akron ORM from PyPI using pip:
-                </p>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 flex items-center justify-between">
-                  <code className="text-gray-800 font-mono">pip install akron</code>
-                  <CopyButton text="pip install akron" className="ml-4" />
-                </div>
-                <p className="text-gray-600">
-                  Akron ORM requires Python 3.7 or higher and automatically installs its dependencies:
-                  pydantic, mysql-connector-python, psycopg2, and pymongo.
-                </p>
-              </section>
-
-              <section id="quick-start" className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-                  <svg className="w-6 h-6 mr-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                  Quick Start
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  Here&apos;s a simple example to get you started with Akron ORM:
-                </p>
-                <PreCodeBlock>
-{`from pydantic import BaseModel
+# Import and connect
 from akron import Akron
-from akron.models import ModelMixin
 
-class User(BaseModel, ModelMixin):
-    id: int
-    name: str
-    age: int
-
-# Initialize database connection
-db = Akron("sqlite:///test.db")
-
-# Create table
-User.create_table(db)
-
-# Insert data
-User.insert(db, User(id=1, name="Alice", age=30))
-User.insert(db, User(id=2, name="Bob", age=25))
-
-# Query data
-users = User.find(db)
-print(users)  # [{'id': 1, 'name': 'Alice', 'age': 30}, ...]
-
-# Find specific users
-young_users = User.find(db, where={"age": 25})
-print(young_users)  # [{'id': 2, 'name': 'Bob', 'age': 25}]`}
-                </PreCodeBlock>
-              </section>
-
-              <section id="basic-usage" className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-                  <svg className="w-6 h-6 mr-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                  </svg>
-                  Basic Usage
-                </h2>
-                
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 flex items-center">
-                  <svg className="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4 4 4 0 004-4V5z" />
-                  </svg>
-                  Defining Models
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Models in Akron ORM must inherit from both <code>pydantic.BaseModel</code> and <code>akron.models.ModelMixin</code>:
-                </p>
-                <PreCodeBlock>
-{`from pydantic import BaseModel
-from akron.models import ModelMixin
-
-class Product(BaseModel, ModelMixin):
-    id: int
-    name: str
-    price: float
-    description: str = None  # Optional field`}
-                </PreCodeBlock>
-
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 flex items-center">
-                  <svg className="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                  </svg>
-                  Database Connection
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Create a database connection using the <code>Akron</code> class with a connection string:
-                </p>
-                <PreCodeBlock>
-{`from akron import Akron
-
-# SQLite
-db = Akron("sqlite:///database.db")
-
-# MySQL
-db = Akron("mysql://user:password@localhost/database")
-
-# PostgreSQL
-db = Akron("postgres://user:password@localhost/database")
-
-# MongoDB
-db = Akron("mongodb://localhost:27017/database")`}
-                </PreCodeBlock>
-              </section>
-
-              <section id="sqlite" className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-                  <svg className="w-6 h-6 mr-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-                  </svg>
-                  SQLite Support
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  SQLite is the default database for Akron ORM. It&apos;s perfect for development, testing, and small applications.
-                </p>
-                <CodeBlock>
-{`# File-based SQLite database
+# Works with any database
 db = Akron("sqlite:///myapp.db")
 
-# In-memory SQLite database (for testing)
-db = Akron("sqlite:///:memory:")`}
-                </CodeBlock>
-              </section>
+# Create tables
+db.create_table("users", {
+    "id": "int",
+    "username": "str", 
+    "email": "str"
+})
 
-              <section id="mysql" className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-                  <svg className="w-6 h-6 mr-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+# Insert data
+user_id = db.insert("users", {
+    "username": "alice",
+    "email": "alice@example.com"
+})
+
+# Query data
+users = db.find("users", {"username": "alice"})
+print(f"Found user: {users[0]}")
+
+db.close()`}
+          </PreCodeBlock>
+          <OutputBlock>
+{`Found user: {'id': 1, 'username': 'alice', 'email': 'alice@example.com'}`}
+          </OutputBlock>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Documentation Sections</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Getting Started */}
+          <Link href="/docs/getting-started" className="group">
+            <div className="border border-gray-200 rounded-lg p-6 hover:border-orange-300 hover:shadow-lg transition-all duration-200">
+              <div className="flex items-center mb-3">
+                <div className="bg-green-100 text-green-600 rounded-lg p-2 mr-3">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
-                  MySQL Support
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  Connect to MySQL databases using the mysql-connector-python driver:
-                </p>
-                <CodeBlock>
-{`# Basic MySQL connection
-db = Akron("mysql://username:password@localhost/database_name")
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-orange-600">Getting Started</h3>
+              </div>
+              <p className="text-gray-600 text-sm">
+                Installation, setup, and your first database operations. Perfect for newcomers to Akron ORM.
+              </p>
+              <div className="mt-4 text-sm text-green-600 font-medium">
+                Start here →
+              </div>
+            </div>
+          </Link>
 
-# MySQL with custom port
-db = Akron("mysql://username:password@localhost:3307/database_name")`}
-                </CodeBlock>
-              </section>
-
-              <section id="postgresql" className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-                  <svg className="w-6 h-6 mr-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+          {/* API Reference */}
+          {/* <Link href="/docs/api/constructor" className="group">
+            <div className="border border-gray-200 rounded-lg p-6 hover:border-orange-300 hover:shadow-lg transition-all duration-200">
+              <div className="flex items-center mb-3">
+                <div className="bg-blue-100 text-blue-600 rounded-lg p-2 mr-3">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                   </svg>
-                  PostgreSQL Support
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  Connect to PostgreSQL databases using the psycopg2 driver:
-                </p>
-                <CodeBlock>
-{`# Basic PostgreSQL connection
-db = Akron("postgres://username:password@localhost/database_name")
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-orange-600">API Reference</h3>
+              </div>
+              <p className="text-gray-600 text-sm">
+                Complete Python API documentation with examples and expected outputs for every method.
+              </p>
+              <div className="mt-4 text-sm text-blue-600 font-medium">
+                View API methods →
+              </div>
+            </div>
+          </Link> */}
 
-# PostgreSQL with custom port
-db = Akron("postgres://username:password@localhost:5433/database_name")`}
-                </CodeBlock>
-              </section>
-
-              <section id="mongodb" className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-                  <svg className="w-6 h-6 mr-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-                  </svg>
-                  MongoDB Support
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  MongoDB is supported as a schemaless NoSQL option:
-                </p>
-                <CodeBlock>
-{`# Basic MongoDB connection
-db = Akron("mongodb://localhost:27017/database_name")
-
-# MongoDB with authentication
-db = Akron("mongodb://username:password@localhost:27017/database_name")`}
-                </CodeBlock>
-                <p className="text-gray-600">
-                  Note: Foreign key relationships are not supported in MongoDB as it&apos;s a schemaless database.
-                </p>
-              </section>
-
-              <section id="cli-commands" className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
-                  <svg className="w-6 h-6 mr-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {/* CLI Tools */}
+          <Link href="/docs/cli" className="group">
+            <div className="border border-gray-200 rounded-lg p-6 hover:border-orange-300 hover:shadow-lg transition-all duration-200">
+              <div className="flex items-center mb-3">
+                <div className="bg-purple-100 text-purple-600 rounded-lg p-2 mr-3">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
-                  CLI Commands
-                </h2>
-                <p className="text-gray-600 mb-4">
-                  Akron ORM provides a command-line interface for database operations:
-                </p>
-                
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 flex items-center">
-                  <svg className="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Create Table
-                </h3>
-                <CodeBlock>{`akron create-table users --db sqlite:///test.db --schema '{"id": "int", "name": "str", "age": "int"}'`}</CodeBlock>
-
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 flex items-center">
-                  <svg className="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  Drop Table
-                </h3>
-                <CodeBlock>akron drop-table users --db sqlite:///test.db</CodeBlock>
-
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 flex items-center">
-                  <svg className="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                  Inspect Schema
-                </h3>
-                <CodeBlock>akron inspect-schema users --db sqlite:///test.db</CodeBlock>
-
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 flex items-center">
-                  <svg className="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                  </svg>
-                  Seed Data
-                </h3>
-                <CodeBlock>{`akron seed users --db sqlite:///test.db --data '{"id": 1, "name": "Alice", "age": 30}'`}</CodeBlock>
-
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Raw SQL</h3>
-                <CodeBlock>{`akron raw-sql --db sqlite:///test.db --sql "SELECT * FROM users"`}</CodeBlock>
-              </section>
-
-              <section id="migrations" className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Migrations</h2>
-                
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Make Migrations</h3>
-                <CodeBlock>{`akron makemigrations users --db sqlite:///test.db --schema '{"id": "int", "name": "str"}'`}</CodeBlock>
-
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Apply Migrations</h3>
-                <CodeBlock>akron migrate users --db sqlite:///test.db</CodeBlock>
-
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">Show Migrations</h3>
-                <CodeBlock>akron showmigrations --db sqlite:///test.db</CodeBlock>
-              </section>
-
-              <section id="models" className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Model API Reference</h2>
-                
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">create_table(db)</h3>
-                <p className="text-gray-600 mb-2">Creates a table for the model in the database.</p>
-                <CodeBlock>User.create_table(db)</CodeBlock>
-
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">insert(db, instance)</h3>
-                <p className="text-gray-600 mb-2">Inserts a new record into the database.</p>
-                <CodeBlock>{`User.insert(db, User(id=1, name="Alice", age=30))`}</CodeBlock>
-
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">find(db, where=None)</h3>
-                <p className="text-gray-600 mb-2">Finds records in the database. Optionally filter with where conditions.</p>
-                <CodeBlock>{`User.find(db, where={"age": 30})`}</CodeBlock>
-
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">update(db, where, data)</h3>
-                <p className="text-gray-600 mb-2">Updates records that match the where conditions.</p>
-                <CodeBlock>{`User.update(db, where={"id": 1}, data={"age": 31})`}</CodeBlock>
-
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">delete(db, where)</h3>
-                <p className="text-gray-600 mb-2">Deletes records that match the where conditions.</p>
-                <CodeBlock>{`User.delete(db, where={"id": 1})`}</CodeBlock>
-              </section>
-
-              <section id="crud-operations" className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">CRUD Operations Example</h2>
-                <p className="text-gray-600 mb-4">
-                  Complete example showing all CRUD operations:
-                </p>
-                <PreCodeBlock>
-{`from pydantic import BaseModel
-from akron import Akron
-from akron.models import ModelMixin
-
-class User(BaseModel, ModelMixin):
-    id: int
-    name: str
-    age: int
-
-db = Akron("sqlite:///test.db")
-
-# CREATE - Create table and insert data
-User.create_table(db)
-User.insert(db, User(id=1, name="Alice", age=30))
-User.insert(db, User(id=2, name="Bob", age=25))
-
-# READ - Find all users
-all_users = User.find(db)
-print("All users:", all_users)
-
-# READ - Find specific users
-young_users = User.find(db, where={"age": 25})
-print("Young users:", young_users)
-
-# UPDATE - Update user age
-rows_updated = User.update(db, where={"name": "Alice"}, data={"age": 31})
-print(f"Updated {rows_updated} rows")
-
-# DELETE - Delete user
-rows_deleted = User.delete(db, where={"name": "Bob"})
-print(f"Deleted {rows_deleted} rows")
-
-# Final state
-final_users = User.find(db)
-print("Final users:", final_users)`}
-                </PreCodeBlock>
-              </section>
-
-              {/* Minimal closing section */}
-              <section className="mb-16">
-                <div className="border border-gray-200 rounded-lg p-8 text-center bg-gray-50">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Ready to Get Started?</h2>
-                  <p className="text-gray-600 mb-6">
-                    You now have everything you need to build with Akron ORM.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <Link 
-                      href="https://github.com/Akash-nath29/akron" 
-                      className="bg-gray-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
-                    >
-                      View on GitHub
-                    </Link>
-                    <Link 
-                      href="https://pypi.org/project/akron/" 
-                      className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
-                    >
-                      View on PyPI
-                    </Link>
-                  </div>
                 </div>
-              </section>
+                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-orange-600">CLI Commands</h3>
+              </div>
+              <p className="text-gray-600 text-sm">
+                Command-line tools for database management, migrations, schema inspection, and data seeding.
+              </p>
+              <div className="mt-4 text-sm text-purple-600 font-medium">
+                Explore CLI →
+              </div>
+            </div>
+          </Link>
+
+          {/* Database Support */}
+          <Link href="/docs/database-support" className="group">
+            <div className="border border-gray-200 rounded-lg p-6 hover:border-orange-300 hover:shadow-lg transition-all duration-200">
+              <div className="flex items-center mb-3">
+                <div className="bg-orange-100 text-orange-600 rounded-lg p-2 mr-3">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-orange-600">Database Support</h3>
+              </div>
+              <p className="text-gray-600 text-sm">
+                Database-specific features, configurations, and best practices for SQLite, MySQL, PostgreSQL, and MongoDB.
+              </p>
+              <div className="mt-4 text-sm text-orange-600 font-medium">
+                View databases →
+              </div>
+            </div>
+          </Link>
+
+          {/* Examples & Tutorials */}
+          <div className="border border-gray-200 rounded-lg p-6 opacity-60">
+            <div className="flex items-center mb-3">
+              <div className="bg-gray-100 text-gray-500 rounded-lg p-2 mr-3">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-500">Examples & Tutorials</h3>
+            </div>
+            <p className="text-gray-500 text-sm">
+              Real-world examples, tutorials, and project templates using Akron ORM.
+            </p>
+            <div className="mt-4 text-sm text-gray-500 font-medium">
+              Coming soon...
+            </div>
+          </div>
+
+          {/* Migration Guide */}
+          <div className="border border-gray-200 rounded-lg p-6 opacity-60">
+            <div className="flex items-center mb-3">
+              <div className="bg-gray-100 text-gray-500 rounded-lg p-2 mr-3">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-500">Migration Guide</h3>
+            </div>
+            <p className="text-gray-500 text-sm">
+              How to migrate from other ORMs and database systems to Akron ORM.
+            </p>
+            <div className="mt-4 text-sm text-gray-500 font-medium">
+              Coming soon...
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-16 mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Logo and Description */}
-            <div className="lg:col-span-1">
-              <div className="flex items-center mb-4">
-                <Image
-                  src="/logo.png"
-                  alt="Akron ORM"
-                  width={32}
-                  height={32}
-                  className="mr-3"
-                />
-                <span className="text-xl font-bold">Akron</span>
-              </div>
-              <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                Universal Python ORM for modern applications
-              </p>
-              
-              {/* Team Section with Tooltip */}
-              <div className="flex items-center">
-                <div className="relative group">
-                  <div className="w-12 h-12 rounded-lg overflow-hidden border-2 border-gray-600 hover:border-orange-400 transition-colors cursor-pointer">
-                    <Image
-                      src="/me.jpg"
-                      alt="Akash Nath and Rohit Debnath"
-                      width={48}
-                      height={48}
-                      className="object-cover w-full h-full"
-                      onError={(e) => {
-                        // Fallback to a placeholder if image doesn't exist
-                        e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%23374151'/%3E%3Ctext x='24' y='24' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-size='10' fill='%23fff'%3Ewe :)%3C/text%3E%3C/svg%3E";
-                      }}
-                    />
-                  </div>
-                  {/* Cool Tooltip */}
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                    <div className="bg-gray-800 text-white text-sm py-2 px-3 rounded-lg shadow-lg whitespace-nowrap">
-                      we :)
-                      <div className="absolute top-full left-1/2 transform -translate-x-1/2">
-                        <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="ml-3">
-                  <p className="text-xs text-gray-400">Made with ❤️ by</p>
-                  <p className="text-sm text-white font-medium">Akash & Rohit</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Resources Column */}
-            <div>
-              <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Resources</h3>
-              <ul className="space-y-3">
-                <li><Link href="/docs" className="text-gray-400 hover:text-white transition-colors text-sm">Documentation</Link></li>
-                <li><Link href="https://github.com/Akash-nath29/akron" className="text-gray-400 hover:text-white transition-colors text-sm">GitHub</Link></li>
-                <li><Link href="https://pypi.org/project/akron/" className="text-gray-400 hover:text-white transition-colors text-sm">PyPI</Link></li>
-              </ul>
-            </div>
-
-            {/* Akash Links */}
-            <div>
-              <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Akash Nath</h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link href="https://github.com/Akash-nath29" className="text-gray-400 hover:text-white transition-colors text-sm flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                    </svg>
-                    GitHub
-                  </Link>
-                </li>
-                <li>
-                  <Link href="https://linkedin.com/in/akash-nath29" className="text-gray-400 hover:text-white transition-colors text-sm flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                    </svg>
-                    LinkedIn
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Rohit Links */}
-            <div>
-              <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Rohit Debnath</h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link href="https://github.com/rohitdebnath" className="text-gray-400 hover:text-white transition-colors text-sm flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.30 3.297-1.30.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                    </svg>
-                    GitHub
-                  </Link>
-                </li>
-                <li>
-                  <Link href="https://linkedin.com/in/rohitdebnath" className="text-gray-400 hover:text-white transition-colors text-sm flex items-center">
-                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                    </svg>
-                    LinkedIn
-                  </Link>
-                </li>
-              </ul>
+      <section className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">API Methods Quick Reference</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Core Operations</h3>
+            <div className="space-y-2">
+              <Link href="/docs/api/constructor" className="block text-blue-600 hover:text-blue-800 text-sm">
+                <code>Akron(connection_url)</code> - Database connection
+              </Link>
+              <Link href="/docs/api/create-table" className="block text-blue-600 hover:text-blue-800 text-sm">
+                <code>create_table(name, schema)</code> - Create tables
+              </Link>
+              <Link href="/docs/api/insert" className="block text-blue-600 hover:text-blue-800 text-sm">
+                <code>insert(table, data)</code> - Add records
+              </Link>
+              <Link href="/docs/api/find" className="block text-blue-600 hover:text-blue-800 text-sm">
+                <code>find(table, filters)</code> - Query data
+              </Link>
             </div>
           </div>
 
-          {/* Bottom Section with Funny Quote */}
-          <div className="border-t border-gray-800 mt-12 pt-8">
+          <div className="border border-gray-200 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Data Management</h3>
+            <div className="space-y-2">
+              <Link href="/docs/api/update" className="block text-blue-600 hover:text-blue-800 text-sm">
+                <code>update(table, filters, new_values)</code> - Modify records
+              </Link>
+              <Link href="/docs/api/delete" className="block text-blue-600 hover:text-blue-800 text-sm">
+                <code>delete(table, filters)</code> - Remove records
+              </Link>
+              <Link href="/docs/api/close" className="block text-blue-600 hover:text-blue-800 text-sm">
+                <code>close()</code> - Close connection
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Supported Databases</h2>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="text-center">
+            <div className="bg-gray-50 rounded-lg p-6 mb-3">
+              <div className="text-3xl mb-2">🗄️</div>
+              <h3 className="font-semibold text-gray-900">SQLite</h3>
+              <p className="text-xs text-gray-600 mt-1">File-based database</p>
+            </div>
+            <CodeBlock>{`sqlite:///app.db`}</CodeBlock>
+          </div>
+
+          <div className="text-center">
+            <div className="bg-gray-50 rounded-lg p-6 mb-3">
+              <div className="text-3xl mb-2">🐬</div>
+              <h3 className="font-semibold text-gray-900">MySQL</h3>
+              <p className="text-xs text-gray-600 mt-1">Popular web database</p>
+            </div>
+            <CodeBlock>{`mysql://user:pass@host/db`}</CodeBlock>
+          </div>
+
+          <div className="text-center">
+            <div className="bg-gray-50 rounded-lg p-6 mb-3">
+              <div className="text-3xl mb-2">🐘</div>
+              <h3 className="font-semibold text-gray-900">PostgreSQL</h3>
+              <p className="text-xs text-gray-600 mt-1">Advanced SQL features</p>
+            </div>
+            <CodeBlock>{`postgres://user:pass@host/db`}</CodeBlock>
+          </div>
+
+          <div className="text-center">
+            <div className="bg-gray-50 rounded-lg p-6 mb-3">
+              <div className="text-3xl mb-2">🍃</div>
+              <h3 className="font-semibold text-gray-900">MongoDB</h3>
+              <p className="text-xs text-gray-600 mt-1">Document database</p>
+            </div>
+            <CodeBlock>{`mongodb://host:port/db`}</CodeBlock>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Key Features</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="border border-gray-200 rounded-lg p-6">
+            <div className="bg-blue-100 text-blue-600 rounded-lg p-2 w-fit mb-3">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Universal API</h3>
+            <p className="text-gray-600 text-sm">
+              Same code works across SQLite, MySQL, PostgreSQL, and MongoDB. No need to learn database-specific syntax.
+            </p>
+          </div>
+
+          <div className="border border-gray-200 rounded-lg p-6">
+            <div className="bg-green-100 text-green-600 rounded-lg p-2 w-fit mb-3">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Type Safety</h3>
+            <p className="text-gray-600 text-sm">
+              Built-in Pydantic integration provides automatic data validation and type checking for reliable applications.
+            </p>
+          </div>
+
+          <div className="border border-gray-200 rounded-lg p-6">
+            <div className="bg-purple-100 text-purple-600 rounded-lg p-2 w-fit mb-3">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Easy Migration</h3>
+            <p className="text-gray-600 text-sm">
+              Switch between databases with minimal code changes. Start with SQLite, scale to PostgreSQL or MongoDB.
+            </p>
+          </div>
+
+          <div className="border border-gray-200 rounded-lg p-6">
+            <div className="bg-orange-100 text-orange-600 rounded-lg p-2 w-fit mb-3">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">CLI Tools</h3>
+            <p className="text-gray-600 text-sm">
+              Powerful command-line interface for schema management, data seeding, migrations, and database inspection.
+            </p>
+          </div>
+
+          <div className="border border-gray-200 rounded-lg p-6">
+            <div className="bg-red-100 text-red-600 rounded-lg p-2 w-fit mb-3">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Production Ready</h3>
+            <p className="text-gray-600 text-sm">
+              Connection pooling, error handling, transaction support, and performance optimizations built-in.
+            </p>
+          </div>
+
+          <div className="border border-gray-200 rounded-lg p-6">
+            <div className="bg-indigo-100 text-indigo-600 rounded-lg p-2 w-fit mb-3">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Zero Dependencies</h3>
+            <p className="text-gray-600 text-sm">
+              Minimal footprint with optional database drivers. Install only what you need for your specific database.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Community & Support</h2>
+        
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <p className="text-gray-400 text-sm italic">
-                &quot;There are only two hard things in Computer Science: cache invalidation and naming things.&quot; – Phil Karlton
+              <div className="bg-blue-100 text-blue-600 rounded-lg p-3 w-fit mx-auto mb-3">
+                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">GitHub</h3>
+              <p className="text-gray-600 text-sm mb-3">
+                Source code, issues, and contributions
               </p>
+              <a 
+                href="https://github.com/Akash-nath29/akron" 
+                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View Repository →
+              </a>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-green-100 text-green-600 rounded-lg p-3 w-fit mx-auto mb-3">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">Documentation</h3>
+              <p className="text-gray-600 text-sm mb-3">
+                Comprehensive guides and examples
+              </p>
+              <Link href="/docs/getting-started" className="text-green-600 hover:text-green-800 text-sm font-medium">
+                Get Started →
+              </Link>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-purple-100 text-purple-600 rounded-lg p-3 w-fit mx-auto mb-3">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+              </svg>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">Package</h3>
+              <p className="text-gray-600 text-sm mb-3">
+                Install via PyPI package manager
+              </p>
+              <a 
+                href="https://pypi.org/project/akron/" 
+                className="text-purple-600 hover:text-purple-800 text-sm font-medium"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View on PyPI →
+              </a>
             </div>
           </div>
         </div>
-      </footer>
-    </div>
+      </section>
+    </DocsLayout>
   );
 }
