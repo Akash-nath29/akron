@@ -4,89 +4,526 @@
 	<img src="https://res.cloudinary.com/dclp2h92a/image/upload/v1756577773/ChatGPT_Image_Aug_30_2025_11_01_26_PM_i6o5k7.png" alt="Akron ORM Logo" width="180"/>
 </p>
 
-
-
 # Akron
 
-Universal, framework-independent ORM for Python.
+**Universal, framework-independent ORM for Python** 🚀
+
+Akron is a modern Python ORM that provides a unified interface for working with multiple databases. Whether you're using SQLite, MySQL, PostgreSQL, or MongoDB, Akron gives you the same clean, type-safe API across all platforms.
+
+[![PyPI version](https://badge.fury.io/py/akron.svg)](https://pypi.org/project/akron/)
+[![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
-## Getting Started
+## ✨ Key Features
 
-```python
-from pydantic import BaseModel
-
-from akron import Akron
-from akron.models import ModelMixin
-
-class User(BaseModel, ModelMixin):
-	id: int
-	name: str
-	age: int
-
-db = Akron("sqlite:///test.db")
-User.create_table(db)
-User.insert(db, User(id=1, name="Alice", age=30))
-users = User.find(db)
-print(users)
-```
+- **🔄 Universal Database Support** - One API for SQLite, MySQL, PostgreSQL, and MongoDB
+- **🛡️ Type Safety** - Full Pydantic integration for type-safe models and validation
+- **🔧 Zero Configuration** - Works out of the box with simple connection strings
+- **🔗 Foreign Key Support** - Multi-table relationships with automatic constraint handling
+- **📦 Auto Migrations** - Schema tracking and automatic migration generation
+- **⚡ CLI Tools** - Command-line interface for database management
+- **🧪 Well Tested** - Comprehensive test coverage across all database drivers
+- **📖 Framework Independent** - Works with any Python framework or standalone scripts
 
 ---
 
-## Features Table
-| Feature                | Supported |
-|------------------------|-----------|
-| Simple Syntax          | ✅        |
-| Multi-DB Support       | ✅        |
-| Multi-Table/FK         | ✅        |
-| Auto Migrations        | ✅        |
-| CLI                    | ✅        |
-| Typesafe Models        | ✅        |
-| NoSQL (MongoDB)        | ✅        |
-| Error Handling         | ✅        |
-| Test Coverage          | ✅        |
+## 🚀 Quick Start
 
----
-
-## Database Support Matrix
-| Database    | CRUD | FKs | Migrations | CLI | Typesafe Models |
-|-------------|------|-----|------------|-----|-----------------|
-| SQLite      | ✅   | ✅  | ✅         | ✅  | ✅              |
-| MySQL       | ✅   | ✅  | ✅         | ✅  | ✅              |
-| PostgreSQL  | ✅   | ✅  | ✅         | ✅  | ✅              |
-| MongoDB     | ✅   | ❌  | Schemaless | ✅  | ✅              |
-
----
-
-## CLI Command Examples
-
-```bash
-akron makemigrations users --db sqlite:///test.db --schema '{"id": "int", "name": "str"}'
-akron migrate users --db sqlite:///test.db
-akron create-table users --db sqlite:///test.db --schema '{"id": "int", "name": "str"}'
-akron drop-table users --db sqlite:///test.db
-akron inspect-schema users --db sqlite:///test.db
-akron seed users --db sqlite:///test.db --data '{"id": 1, "name": "Alice"}'
-akron raw-sql --db sqlite:///test.db --sql "SELECT * FROM users"
-```
-
----
-
-## Versioning & Changelog
-- Current version: **v0.1.1**
-- See `CHANGELOG.md` for updates.
-
----
-
-
-## PyPI Installation
+### Installation
 
 ```bash
 pip install akron
 ```
 
+### Basic Usage
+
+```python
+from akron import Akron
+
+# Initialize database connection
+db = Akron("sqlite:///example.db")
+
+# Create table
+db.create_table("users", {
+    "id": "int",
+    "name": "str", 
+    "email": "str",
+    "age": "int"
+})
+
+# Insert data
+user_id = db.insert("users", {
+    "name": "Alice Johnson",
+    "email": "alice@example.com", 
+    "age": 28
+})
+
+# Query data
+users = db.find("users")
+alice = db.find("users", {"name": "Alice Johnson"})
+
+# Update records
+db.update("users", {"id": user_id}, {"age": 29})
+
+# Delete records
+db.delete("users", {"email": "alice@example.com"})
+
+# Close connection
+db.close()
+```
+
+### Type-Safe Models with Pydantic
+
+```python
+from pydantic import BaseModel
+from akron import Akron
+from akron.models import ModelMixin
+
+class User(BaseModel, ModelMixin):
+    id: int
+    name: str
+    email: str
+    age: int
+    is_active: bool = True
+
+# Initialize database
+db = Akron("sqlite:///users.db")
+
+# Create table from model
+User.create_table(db)
+
+# Insert with type safety
+new_user = User(id=1, name="Bob Smith", email="bob@example.com", age=25)
+User.insert(db, new_user)
+
+# Query with automatic deserialization
+users = User.find(db)  # Returns List[User]
+active_users = User.find(db, {"is_active": True})
+
+# Update and delete
+User.update(db, {"id": 1}, {"age": 26})
+User.delete(db, {"email": "bob@example.com"})
+```
+
 ---
 
-## License
-[MIT](LICENSE)
+## 🗄️ Database Support
+
+| Database    | Connection String Example | CRUD | Foreign Keys | Migrations | CLI Support |
+|-------------|---------------------------|------|--------------|------------|-------------|
+| **SQLite**  | `sqlite:///path/to/db.db` | ✅   | ✅           | ✅         | ✅          |
+| **MySQL**   | `mysql://user:pass@host:port/dbname` | ✅   | ✅           | ✅         | ✅          |
+| **PostgreSQL** | `postgres://user:pass@host:port/dbname` | ✅   | ✅           | ✅         | ✅          |
+| **MongoDB** | `mongodb://host:port/dbname` | ✅   | ❌*          | Schemaless | ✅          |
+
+*MongoDB doesn't support traditional foreign keys but maintains the same API for document references.
+
+### Connection Examples
+
+```python
+# SQLite (file-based)
+db = Akron("sqlite:///myapp.db")
+
+# SQLite (in-memory)
+db = Akron("sqlite:///:memory:")
+
+# MySQL
+db = Akron("mysql://username:password@localhost:3306/mydatabase")
+
+# PostgreSQL
+db = Akron("postgres://username:password@localhost:5432/mydatabase")
+
+# MongoDB
+db = Akron("mongodb://localhost:27017/mydatabase")
+```
+
+---
+
+## 🔗 Advanced Features
+
+### Foreign Key Relationships
+
+```python
+# Create tables with foreign key relationships
+db.create_table("users", {
+    "id": "int",
+    "name": "str",
+    "email": "str"
+})
+
+db.create_table("orders", {
+    "id": "int",
+    "user_id": "int->users.id",  # Foreign key syntax
+    "product_name": "str",
+    "amount": "float",
+    "status": "str"
+})
+
+# Insert related data
+user_id = db.insert("users", {"name": "Alice", "email": "alice@example.com"})
+order_id = db.insert("orders", {
+    "user_id": user_id,
+    "product_name": "Laptop",
+    "amount": 999.99,
+    "status": "pending"
+})
+
+# Query with relationships
+user_orders = db.find("orders", {"user_id": user_id})
+```
+
+### Complex Queries and Filtering
+
+```python
+# Multiple filter conditions
+adults = db.find("users", {"age": 25, "is_active": True})
+
+# Range queries (depends on driver capabilities)
+expensive_orders = db.find("orders", {"amount": ">500"})
+
+# Get all records
+all_users = db.find("users")  # No filters = all records
+```
+
+### Pydantic Model Relationships
+
+```python
+class User(BaseModel, ModelMixin):
+    id: int
+    name: str
+    email: str
+    age: int
+
+class Order(BaseModel, ModelMixin):
+    id: int
+    user_id: int  # Foreign key reference
+    product_name: str
+    amount: float
+    status: str
+
+# Create tables
+User.create_table(db)
+Order.create_table(db)
+
+# Work with related models
+user = User(id=1, name="Charlie", email="charlie@example.com", age=30)
+User.insert(db, user)
+
+order = Order(id=1, user_id=1, product_name="Book", amount=24.99, status="shipped")
+Order.insert(db, order)
+
+# Query relationships
+user_orders = Order.find(db, {"user_id": 1})
+```
+
+---
+
+## 🔄 Migration System
+
+Akron includes an automatic migration system that tracks schema changes and generates migration files.
+
+### Auto-Generate Migrations
+
+```bash
+# Create a migration for schema changes
+akron makemigrations users --db sqlite:///app.db --schema '{"id": "int", "name": "str", "email": "str", "created_at": "str"}'
+
+# Apply migrations
+akron migrate users --db sqlite:///app.db
+
+# View migration history
+akron showmigrations users --db sqlite:///app.db
+```
+
+### Migration Features
+
+- **Automatic Schema Diffing** - Compares current vs target schema
+- **Migration File Generation** - Creates JSON migration files in `migrations/` directory
+- **Version Tracking** - Maintains migration history in `_akron_migrations` table
+- **Rollback Support** - Track applied migrations for potential rollbacks
+
+---
+
+## 🛠️ CLI Commands
+
+Akron provides a comprehensive command-line interface for database management:
+
+### Table Management
+
+```bash
+# Create a new table
+akron create-table users --db sqlite:///app.db --schema '{"id": "int", "name": "str", "email": "str"}'
+
+# Drop an existing table
+akron drop-table users --db sqlite:///app.db
+
+# Inspect table schema
+akron inspect-schema users --db sqlite:///app.db
+```
+
+### Data Management
+
+```bash
+# Seed table with data
+akron seed users --db sqlite:///app.db --data '{"name": "John Doe", "email": "john@example.com"}'
+
+# Execute raw SQL (SQL databases only)
+akron raw-sql --db sqlite:///app.db --sql "SELECT COUNT(*) FROM users"
+```
+
+### Migration Commands
+
+```bash
+# Generate migration for schema changes
+akron makemigrations orders --db mysql://user:pass@localhost/shop --schema '{"id": "int", "user_id": "int->users.id", "total": "float"}'
+
+# Apply pending migrations
+akron migrate orders --db mysql://user:pass@localhost/shop
+
+# View applied migrations
+akron showmigrations orders --db mysql://user:pass@localhost/shop
+```
+
+---
+
+## 📊 Type System
+
+Akron provides a flexible type system that maps Python types to database-specific types:
+
+### Supported Python Types
+
+| Python Type | SQL Databases | MongoDB |
+|-------------|---------------|---------|
+| `int`       | INTEGER       | Number  |
+| `str`       | VARCHAR/TEXT  | String  |
+| `float`     | REAL/DOUBLE   | Number  |
+| `bool`      | BOOLEAN       | Boolean |
+
+### Custom Type Mapping
+
+```python
+# Define custom field types in Pydantic models
+from pydantic import Field
+from datetime import datetime
+
+class User(BaseModel, ModelMixin):
+    id: int
+    name: str
+    email: str = Field(..., max_length=255)
+    age: int = Field(..., ge=0, le=150)
+    created_at: str  # Store as ISO string
+    is_premium: bool = False
+```
+
+---
+
+## 🔧 Configuration & Best Practices
+
+### Connection Pooling
+
+```python
+# For production use, consider connection pooling
+class DatabaseManager:
+    def __init__(self, db_url: str):
+        self.db_url = db_url
+        self._db = None
+    
+    def get_db(self):
+        if self._db is None:
+            self._db = Akron(self.db_url)
+        return self._db
+    
+    def close(self):
+        if self._db:
+            self._db.close()
+            self._db = None
+
+# Usage
+db_manager = DatabaseManager("sqlite:///app.db")
+db = db_manager.get_db()
+```
+
+### Error Handling
+
+```python
+from akron.exceptions import AkronError, TableNotFoundError, SchemaError
+
+try:
+    db = Akron("sqlite:///myapp.db")
+    users = db.find("nonexistent_table")
+except TableNotFoundError:
+    print("Table doesn't exist - creating it...")
+    db.create_table("users", {"id": "int", "name": "str"})
+except AkronError as e:
+    print(f"Database error: {e}")
+```
+
+### Environment-Based Configuration
+
+```python
+import os
+from akron import Akron
+
+# Use environment variables for database configuration
+DATABASE_URL = os.getenv(
+    "DATABASE_URL", 
+    "sqlite:///default.db"  # fallback for development
+)
+
+db = Akron(DATABASE_URL)
+```
+
+---
+
+## 🧪 Testing
+
+Akron includes comprehensive test coverage and provides utilities for testing:
+
+### Test Database Setup
+
+```python
+import pytest
+from akron import Akron
+from akron.models import ModelMixin
+from pydantic import BaseModel
+
+class User(BaseModel, ModelMixin):
+    id: int
+    name: str
+    email: str
+
+@pytest.fixture
+def test_db():
+    # Use in-memory database for testing
+    db = Akron("sqlite:///:memory:")
+    User.create_table(db)
+    yield db
+    db.close()
+
+def test_user_creation(test_db):
+    user = User(id=1, name="Test User", email="test@example.com")
+    User.insert(test_db, user)
+    
+    users = User.find(test_db, {"email": "test@example.com"})
+    assert len(users) == 1
+    assert users[0].name == "Test User"
+```
+
+### Running Tests
+
+```bash
+# Run the full test suite
+pytest tests/
+
+# Run specific database tests
+pytest tests/test_sqlite_pytest.py
+pytest tests/test_mysql_pytest.py
+```
+
+---
+
+## 📈 Performance Considerations
+
+### Batch Operations
+
+```python
+# For large datasets, consider batch insertions
+users_data = [
+    {"name": f"User {i}", "email": f"user{i}@example.com", "age": 20 + i}
+    for i in range(1000)
+]
+
+for user_data in users_data:
+    db.insert("users", user_data)
+```
+
+### Connection Management
+
+```python
+# Always close connections in production
+try:
+    db = Akron("mysql://user:pass@localhost/prod_db")
+    # ... database operations ...
+finally:
+    db.close()
+
+# Or use context managers (if implementing __enter__/__exit__)
+```
+
+---
+
+## 🔍 Examples
+
+Check out the `examples/` directory for more comprehensive examples:
+
+- `basic_crud.py` - Basic CRUD operations
+- `sqlite_multi_table.py` - Multi-table relationships with SQLite
+- `postgres_multi_table.py` - PostgreSQL with foreign keys
+
+---
+
+## 🆚 Version Information
+
+- **Current Version**: v0.1.5
+- **Python Requirements**: Python 3.7+
+- **Dependencies**: 
+  - `pydantic` - Type safety and validation
+  - `mysql-connector-python` - MySQL support
+  - `psycopg2` - PostgreSQL support  
+  - `pymongo` - MongoDB support
+
+### Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for detailed version history and updates.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please feel free to:
+
+1. **Report Issues** - Found a bug? Let us know!
+2. **Feature Requests** - Have an idea? We'd love to hear it!
+3. **Pull Requests** - Code contributions are always welcome!
+
+### Development Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/Akash-nath29/akron.git
+cd akron
+
+# Install development dependencies
+pip install -e .
+pip install pytest
+
+# Run tests
+pytest tests/
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🔗 Links
+
+- **PyPI Package**: https://pypi.org/project/akron/
+- **GitHub Repository**: https://github.com/Akash-nath29/akron
+- **Documentation**: https://akron-website.vercel.app/docs
+- **Issues & Support**: https://github.com/Akash-nath29/akron/issues
+
+---
+
+<div align="center">
+
+**Made with ❤️ by the Akron team**
+
+⭐ **Star us on GitHub if you find Akron useful!** ⭐
+
+</div>
