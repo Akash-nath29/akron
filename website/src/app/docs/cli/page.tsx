@@ -10,19 +10,74 @@ export default function CLIOverviewPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Overview</h2>
         <p className="text-gray-600 mb-4">
           The Akron CLI provides powerful command-line tools for database management, schema migrations, 
-          data seeding, and development workflows. All commands require a database connection URL and 
-          provide consistent interfaces across SQLite, MySQL, PostgreSQL, and MongoDB.
+          data seeding, and development workflows. Akron now supports both modern schema management commands 
+          and legacy database operation commands.
         </p>
         
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">Installation</h3>
-          <p className="text-blue-800 mb-2">The CLI is automatically installed with the Akron package:</p>
+          <div className="flex items-center mb-2">
+            <div className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-medium mr-3">
+              NEW
+            </div>
+            <h3 className="text-lg font-semibold text-blue-900">Modern Schema Management</h3>
+          </div>
+          <p className="text-blue-800 mb-2">Akron features powerful declarative schema management:</p>
+          <CodeBlock>akron db init --provider sqlite</CodeBlock>
+        </div>
+        
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Installation</h3>
+          <p className="text-gray-600 mb-2">The CLI is automatically installed with the Akron package:</p>
           <CodeBlock>pip install akron</CodeBlock>
         </div>
       </section>
 
       <section className="mb-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Available Commands</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Modern Schema Management Commands</h2>
+        <p className="text-gray-600 mb-6">
+          These commands provide a modern workflow for managing your database schema declaratively.
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="border border-blue-200 bg-blue-50 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <a href="/docs/cli/db-init" className="text-blue-600 hover:text-blue-800">akron db init</a>
+            </h3>
+            <p className="text-gray-600 text-sm mb-3">Initialize a new Akron project with schema configuration file.</p>
+            <CodeBlock>akron db init --provider sqlite</CodeBlock>
+          </div>
+
+          <div className="border border-blue-200 bg-blue-50 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <a href="/docs/cli/db-makemigrations" className="text-blue-600 hover:text-blue-800">akron db makemigrations</a>
+            </h3>
+            <p className="text-gray-600 text-sm mb-3">Generate migration files from schema changes automatically.</p>
+            <CodeBlock>akron db makemigrations --name &quot;initial&quot;</CodeBlock>
+          </div>
+
+          <div className="border border-blue-200 bg-blue-50 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <a href="/docs/cli/db-migrate" className="text-blue-600 hover:text-blue-800">akron db migrate</a>
+            </h3>
+            <p className="text-gray-600 text-sm mb-3">Apply pending migrations to update your database schema.</p>
+            <CodeBlock>akron db migrate --dry-run</CodeBlock>
+          </div>
+
+          <div className="border border-blue-200 bg-blue-50 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <a href="/docs/cli/db-status" className="text-blue-600 hover:text-blue-800">akron db status</a>
+            </h3>
+            <p className="text-gray-600 text-sm mb-3">Show current schema and migration status information.</p>
+            <CodeBlock>akron db status</CodeBlock>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Legacy Commands</h2>
+        <p className="text-gray-600 mb-6">
+          These commands provide direct database operations and are maintained for backward compatibility.
+        </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="border border-gray-200 rounded-lg p-6">

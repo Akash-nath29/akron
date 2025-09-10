@@ -12,3 +12,9 @@ build/*
 next_update.md
 
 docs.md
+
+IMPLEMENTATION_SUMMARY.md
+example_akron.json
+data
+test_cli.py
+SCHEMA_GUIDE.md

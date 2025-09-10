@@ -220,9 +220,121 @@ user_orders = Order.find(db, {"user_id": 1})
 
 ---
 
-## 🔄 Migration System
+## 🔄 Schema Management (Prisma-like)
 
-Akron includes an automatic migration system that tracks schema changes and generates migration files.
+Akron now supports Prisma-like schema management with `akron.json` configuration files:
+
+### Initialize a New Project
+
+```bash
+# Initialize with SQLite (default)
+akron db init
+
+# Initialize with specific database
+akron db init --provider postgresql --url "postgres://user:pass@localhost:5432/mydb"
+akron db init --provider mysql --url "mysql://user:pass@localhost:3306/mydb"
+akron db init --provider mongodb --url "mongodb://localhost:27017/mydb"
+```
+
+### Define Your Schema
+
+Edit the generated `akron.json` file:
+
+```json
+{
+  "database": {
+    "provider": "sqlite",
+    "url": "sqlite:///app.db"
+  },
+  "tables": {
+    "users": {
+      "columns": {
+        "id": {
+          "type": "int",
+          "primary_key": true,
+          "auto_increment": true
+        },
+        "email": {
+          "type": "str",
+          "unique": true,
+          "nullable": false
+        },
+        "username": {
+          "type": "str",
+          "unique": true,
+          "nullable": false,
+          "max_length": 50
+        },
+        "created_at": {
+          "type": "datetime",
+          "default": "CURRENT_TIMESTAMP"
+        }
+      }
+    },
+    "posts": {
+      "columns": {
+        "id": {
+          "type": "int",
+          "primary_key": true,
+          "auto_increment": true
+        },
+        "title": {
+          "type": "str",
+          "nullable": false,
+          "max_length": 200
+        },
+        "content": {
+          "type": "text",
+          "nullable": true
+        },
+        "author_id": {
+          "type": "int",
+          "nullable": false
+        },
+        "published": {
+          "type": "bool",
+          "default": false
+        }
+      },
+      "foreign_keys": {
+        "author_id": {
+          "references": "users",
+          "column": "id",
+          "on_delete": "CASCADE"
+        }
+      }
+    }
+  }
+}
+```
+
+### Generate and Apply Migrations
+
+```bash
+# Generate migrations from schema changes
+akron db makemigrations --name "add_user_posts"
+
+# Preview what will be migrated
+akron db migrate --dry-run
+
+# Apply migrations
+akron db migrate
+
+# Check migration status
+akron db status
+```
+
+### Schema Management Workflow
+
+1. **Initialize**: `akron db init` creates `akron.json` and `.akron/` directory
+2. **Define**: Edit `akron.json` to define your database schema
+3. **Generate**: `akron db makemigrations` creates migration files
+4. **Apply**: `akron db migrate` applies pending migrations
+5. **Monitor**: `akron db status` shows current state
+
+## 🔄 Legacy Migration System
+
+For backward compatibility, Akron still supports the original migration commands:
 
 ### Auto-Generate Migrations
 
@@ -248,41 +360,47 @@ akron showmigrations users --db sqlite:///app.db
 
 ## 🛠️ CLI Commands
 
-Akron provides a comprehensive command-line interface for database management:
+Akron provides two command interfaces: **modern schema management** and **legacy commands**.
 
-### Table Management
+### Modern Schema Management Commands
 
 ```bash
-# Create a new table
-akron create-table users --db sqlite:///app.db --schema '{"id": "int", "name": "str", "email": "str"}'
+# Initialize a new Akron project
+akron db init                                      # SQLite default
+akron db init --provider postgresql --url "..."   # PostgreSQL
+akron db init --provider mysql --url "..."        # MySQL
+akron db init --provider mongodb --url "..."      # MongoDB
 
-# Drop an existing table
+# Generate migrations from schema changes
+akron db makemigrations                            # Auto-named migration
+akron db makemigrations --name "add_user_table"   # Custom name
+
+# Apply migrations
+akron db migrate                                   # Apply all pending
+akron db migrate --dry-run                        # Preview changes
+
+# Check status
+akron db status                                    # Show schema and migration status
+
+# Reset database (planned)
+akron db reset --force                            # Drop all and reapply
+```
+
+### Legacy Commands (Backward Compatibility)
+
+```bash
+# Table Management
+akron create-table users --db sqlite:///app.db --schema '{"id": "int", "name": "str"}'
 akron drop-table users --db sqlite:///app.db
-
-# Inspect table schema
 akron inspect-schema users --db sqlite:///app.db
-```
 
-### Data Management
-
-```bash
-# Seed table with data
-akron seed users --db sqlite:///app.db --data '{"name": "John Doe", "email": "john@example.com"}'
-
-# Execute raw SQL (SQL databases only)
+# Data Management
+akron seed users --db sqlite:///app.db --data '{"name": "John", "email": "john@example.com"}'
 akron raw-sql --db sqlite:///app.db --sql "SELECT COUNT(*) FROM users"
-```
 
-### Migration Commands
-
-```bash
-# Generate migration for schema changes
-akron makemigrations orders --db mysql://user:pass@localhost/shop --schema '{"id": "int", "user_id": "int->users.id", "total": "float"}'
-
-# Apply pending migrations
+# Legacy Migration Commands
+akron makemigrations orders --db mysql://user:pass@localhost/shop --schema '{"id": "int"}'
 akron migrate orders --db mysql://user:pass@localhost/shop
-
-# View applied migrations
 akron showmigrations orders --db mysql://user:pass@localhost/shop
 ```
 

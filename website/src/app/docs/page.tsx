@@ -53,6 +53,30 @@ db.close()`}
 {`Found user: {'id': 1, 'username': 'alice', 'email': 'alice@example.com'}`}
           </OutputBlock>
         </div>
+
+        <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-6 mb-8">
+          <h2 className="text-lg font-semibold text-blue-900 mb-3">🆕 New: Declarative Schema Management</h2>
+          <p className="text-blue-800 mb-4">Akron now features powerful declarative schema management with automatic migrations!</p>
+          <PreCodeBlock>
+{`# Initialize a new project with schema template
+akron db init --provider sqlite
+
+# Edit the generated akron.json to define your schema
+# Generate migrations from schema changes
+akron db makemigrations --name "initial"
+
+# Apply migrations to database
+akron db migrate
+
+# Check status
+akron db status`}
+          </PreCodeBlock>
+          <div className="mt-4">
+            <Link href="/docs/schema-management" className="text-blue-700 hover:text-blue-900 font-medium">
+              Learn more about Schema Management →
+            </Link>
+          </div>
+        </div>
       </section>
 
       <section className="mb-12">
@@ -75,6 +99,29 @@ db.close()`}
               </p>
               <div className="mt-4 text-sm text-green-600 font-medium">
                 Start here →
+              </div>
+            </div>
+          </Link>
+
+          {/* Schema Management */}
+          <Link href="/docs/schema-management" className="group">
+            <div className="border border-blue-200 bg-blue-50 rounded-lg p-6 hover:border-blue-300 hover:shadow-lg transition-all duration-200 relative">
+              <div className="absolute top-2 right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-medium">
+                NEW
+              </div>
+              <div className="flex items-center mb-3">
+                <div className="bg-blue-100 text-blue-600 rounded-lg p-2 mr-3">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600">Schema Management</h3>
+              </div>
+              <p className="text-gray-600 text-sm">
+                Declarative schema definition with automatic migrations. Define your database structure in JSON and let Akron handle the implementation.
+              </p>
+              <div className="mt-4 text-sm text-blue-600 font-medium">
+                Explore Schema Management →
               </div>
             </div>
           </Link>
