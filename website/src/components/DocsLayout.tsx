@@ -405,6 +405,7 @@ function SidebarContent({ onLinkClick }: { onLinkClick?: () => void }) {
           <li><Link href="/docs/api/update" className="text-gray-600 hover:text-blue-600 text-sm block py-1" onClick={onLinkClick}>update()</Link></li>
           <li><Link href="/docs/api/delete" className="text-gray-600 hover:text-blue-600 text-sm block py-1" onClick={onLinkClick}>delete()</Link></li>
           <li><Link href="/docs/api/close" className="text-gray-600 hover:text-blue-600 text-sm block py-1" onClick={onLinkClick}>close()</Link></li>
+          <li><Link href="/docs/api/transaction" className="text-gray-600 hover:text-blue-800 text-sm block py-1" onClick={onLinkClick}>transaction()</Link></li>
         </ul>
       </div>
 
@@ -429,7 +430,7 @@ function SidebarContent({ onLinkClick }: { onLinkClick?: () => void }) {
       <div className="pb-4">
         <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider flex items-center">
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
           </svg>
           Database Support
         </h3>
@@ -438,6 +439,18 @@ function SidebarContent({ onLinkClick }: { onLinkClick?: () => void }) {
           <li><Link href="/docs/database-support/mysql" className="text-gray-600 hover:text-blue-600 text-sm block py-1" onClick={onLinkClick}>MySQL</Link></li>
           <li><Link href="/docs/database-support/postgresql" className="text-gray-600 hover:text-blue-600 text-sm block py-1" onClick={onLinkClick}>PostgreSQL</Link></li>
           <li><Link href="/docs/database-support/mongodb" className="text-gray-600 hover:text-blue-600 text-sm block py-1" onClick={onLinkClick}>MongoDB</Link></li>
+        </ul>
+      </div>
+
+      <div className="pb-4">
+        <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider flex items-center">
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+          </svg>
+          More Docs
+        </h3>
+        <ul className="mt-2 space-y-1">
+          <li><Link href="/docs/schema-management" className="text-gray-600 hover:text-blue-800 text-sm block py-1" onClick={onLinkClick}>Prisma-like Schema Management</Link></li>
         </ul>
       </div>
     </>

@@ -1,5 +1,3 @@
-
-
 <p align="center">
 	<img src="https://res.cloudinary.com/dclp2h92a/image/upload/v1756577773/ChatGPT_Image_Aug_30_2025_11_01_26_PM_i6o5k7.png" alt="Akron ORM Logo" width="180"/>
 </p>
@@ -18,14 +16,28 @@ Akron is a modern Python ORM that provides a unified interface for working with 
 
 ## ✨ Key Features
 
+### Core Capabilities
 - **🔄 Universal Database Support** - One API for SQLite, MySQL, PostgreSQL, and MongoDB
 - **🛡️ Type Safety** - Full Pydantic integration for type-safe models and validation
 - **🔧 Zero Configuration** - Works out of the box with simple connection strings
-- **🔗 Foreign Key Support** - Multi-table relationships with automatic constraint handling
-- **📦 Auto Migrations** - Schema tracking and automatic migration generation
-- **⚡ CLI Tools** - Command-line interface for database management
+- **� Framework Independent** - Works with any Python framework or standalone scripts
+
+### Advanced ORM Features
+- **📊 Advanced Querying** - QueryBuilder with filtering, sorting, pagination, and joins
+- **🔍 Smart Operators** - Support for `gt`, `lt`, `in`, `like`, `isnull` and more
+- **📈 Aggregations** - Built-in `sum`, `count`, `avg`, `min`, `max` with GROUP BY
+- **🔄 Transactions** - Context managers and manual transaction control
+- **⚡ Bulk Operations** - Efficient bulk insert, update, and delete operations
+- **🗂️ Indexing** - Create and manage database indexes for performance
+- **🔗 Relationships** - Foreign key constraints and multi-table operations
+- **�️ Raw SQL** - Execute custom SQL when needed
+- **💾 Serialization** - Convert results to JSON and dictionaries
+
+### Developer Experience
+- **📦 Schema Management** - Declarative schema with automatic migrations via `akron.json`
+- **⚡ CLI Tools** - Modern command-line interface (`akron db init`, `migrate`, etc.)
 - **🧪 Well Tested** - Comprehensive test coverage across all database drivers
-- **📖 Framework Independent** - Works with any Python framework or standalone scripts
+- **� Rich Documentation** - Complete guides and examples for all features
 
 ---
 
@@ -45,30 +57,68 @@ from akron import Akron
 # Initialize database connection
 db = Akron("sqlite:///example.db")
 
-# Create table
+# Create table with relationships
 db.create_table("users", {
     "id": "int",
     "name": "str", 
     "email": "str",
-    "age": "int"
+    "age": "int",
+    "active": "bool"
+})
+
+db.create_table("posts", {
+    "id": "int",
+    "title": "str",
+    "content": "str",
+    "user_id": "int->users.id",  # Foreign key to users table
+    "published": "bool"
 })
 
 # Insert data
 user_id = db.insert("users", {
     "name": "Alice Johnson",
     "email": "alice@example.com", 
-    "age": 28
+    "age": 28,
+    "active": True
 })
 
-# Query data
-users = db.find("users")
-alice = db.find("users", {"name": "Alice Johnson"})
+# Bulk insert
+post_ids = db.bulk_insert("posts", [
+    {"title": "Hello World", "content": "My first post", "user_id": user_id, "published": True},
+    {"title": "Python Tips", "content": "Some useful tips", "user_id": user_id, "published": False}
+])
 
-# Update records
-db.update("users", {"id": user_id}, {"age": 29})
+# Advanced querying with QueryBuilder
+published_posts = db.query("posts").where(
+    published=True,
+    user_id=user_id
+).order_by("-created_at").limit(10).all()
 
-# Delete records
-db.delete("users", {"email": "alice@example.com"})
+# Find with operators
+young_users = db.query("users").where(age__lt=30, active=True).all()
+
+# Aggregations
+user_stats = db.aggregate("posts", {
+    "post_count": "count",
+    "avg_views": "avg"
+}, group_by=["user_id"])
+
+# Transactions
+with db.transaction():
+    new_user_id = db.insert("users", {"name": "Bob", "email": "bob@example.com", "age": 25, "active": True})
+    db.insert("posts", {"title": "Bob's First Post", "user_id": new_user_id, "published": True})
+
+# Count and existence checks
+total_users = db.count("users")
+has_admin = db.exists("users", {"email": "admin@example.com"})
+
+# Raw SQL for complex queries
+user_post_stats = db.raw("""
+    SELECT u.name, COUNT(p.id) as post_count
+    FROM users u LEFT JOIN posts p ON u.id = p.user_id
+    GROUP BY u.id, u.name
+    ORDER BY post_count DESC
+""")
 
 # Close connection
 db.close()
@@ -174,17 +224,65 @@ order_id = db.insert("orders", {
 user_orders = db.find("orders", {"user_id": user_id})
 ```
 
-### Complex Queries and Filtering
+### Complex Queries with QueryBuilder
 
 ```python
-# Multiple filter conditions
-adults = db.find("users", {"age": 25, "is_active": True})
+# Advanced filtering with operators
+results = db.query("users").where(
+    age__gte=25,           # age >= 25
+    name__like="John%",    # name starts with "John" 
+    active=True            # active = True
+).order_by("-created_at").limit(10).all()
 
-# Range queries (depends on driver capabilities)
-expensive_orders = db.find("orders", {"amount": ">500"})
+# Pagination made simple
+page_1 = db.query("posts").paginate(page=1, per_page=20)
+page_2 = db.query("posts").paginate(page=2, per_page=20)
 
-# Get all records
-all_users = db.find("users")  # No filters = all records
+# Joins and aggregations
+user_stats = db.query("users").join(
+    "posts", on="users.id = posts.user_id"
+).select([
+    "users.name",
+    "COUNT(posts.id) as post_count"
+]).group_by("users.id").all()
+
+# Bulk operations for performance
+db.bulk_insert("products", [
+    {"name": "Product 1", "price": 19.99},
+    {"name": "Product 2", "price": 29.99},
+    {"name": "Product 3", "price": 39.99}
+])
+
+# Atomic transactions
+with db.transaction():
+    user_id = db.insert("users", {"name": "Charlie", "email": "charlie@example.com"})
+    db.insert("profiles", {"user_id": user_id, "bio": "New user profile"})
+    # All operations committed together or rolled back on error
+```
+
+### Performance and Indexing
+
+```python
+# Create indexes for faster queries
+db.create_index("users", ["email"])        # Single column index
+db.create_index("orders", ["user_id", "status"])  # Composite index
+
+# Performance optimization with exists()
+if db.exists("users", {"email": "admin@example.com"}):
+    print("Admin user found")
+
+# Count records efficiently
+total_active_users = db.count("users", {"active": True})
+
+# Raw SQL for complex operations
+results = db.raw("""
+    SELECT category, AVG(price) as avg_price, COUNT(*) as item_count
+    FROM products 
+    WHERE active = 1
+    GROUP BY category
+    HAVING COUNT(*) > 5
+    ORDER BY avg_price DESC
+""")
 ```
 
 ### Pydantic Model Relationships
@@ -598,6 +696,54 @@ See [CHANGELOG.md](CHANGELOG.md) for detailed version history and updates.
 
 ---
 
+## 📚 Quick Reference
+
+### Essential Operations Cheat Sheet
+
+```python
+# Basic CRUD
+db.insert("table", {"field": "value"})
+db.find("table", {"field": "value"})  
+db.update("table", {"id": 1}, {"field": "new_value"})
+db.delete("table", {"field": "value"})
+
+# Advanced Querying  
+db.query("table").where(age__gte=25, active=True).order_by("-created_at").limit(10).all()
+db.query("table").paginate(page=1, per_page=20)
+
+# Aggregations
+db.count("table", {"active": True})
+db.aggregate("table", {"total": "sum", "avg_price": "avg"})
+
+# Bulk Operations
+db.bulk_insert("table", [{"name": "A"}, {"name": "B"}])
+db.bulk_update("table", {"active": False}, {"status": "inactive"})
+
+# Transactions
+with db.transaction():
+    # Multiple operations here
+
+# Performance
+db.exists("table", {"email": "user@example.com"})
+db.create_index("table", ["email", "status"])
+db.raw("SELECT * FROM table WHERE custom_condition")
+```
+
+### QueryBuilder Operators
+
+| Operator | Example | SQL Equivalent |
+|----------|---------|----------------|
+| `field` | `where(age=25)` | `WHERE age = 25` |
+| `field__gt` | `where(age__gt=18)` | `WHERE age > 18` |
+| `field__gte` | `where(age__gte=18)` | `WHERE age >= 18` |
+| `field__lt` | `where(age__lt=65)` | `WHERE age < 65` |
+| `field__lte` | `where(age__lte=65)` | `WHERE age <= 65` |
+| `field__in` | `where(status__in=["active", "pending"])` | `WHERE status IN (...)` |
+| `field__like` | `where(name__like="John%")` | `WHERE name LIKE 'John%'` |
+| `field__isnull` | `where(deleted_at__isnull=True)` | `WHERE deleted_at IS NULL` |
+
+---
+
 ## 🤝 Contributing
 
 We welcome contributions! Please feel free to:
@@ -645,3 +791,36 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ⭐ **Star us on GitHub if you find Akron useful!** ⭐
 
 </div>
+
+---
+
+## 🔄 Transactions & Atomic Operations
+
+**Transactions** let you group multiple database operations into a single, all-or-nothing unit. This means either *all* changes succeed together, or *none* are applied if something fails. This is essential for keeping your data safe and consistent.
+
+### Why Use Transactions?
+- **Data Integrity:** Prevents partial updates and keeps your database consistent.
+- **Automatic Rollback:** If any operation fails, all changes are undone automatically.
+- **Business Logic:** Ensures complex operations (like money transfers, order processing) are atomic.
+
+### Example Usage
+```python
+with db.transaction():
+    user_id = db.insert("users", {"name": "Alice"})
+    db.insert("profiles", {"user_id": user_id})
+    # If any step fails, all changes are rolled back!
+```
+
+### Real-World Scenarios
+- **Money Transfer:** Deduct from one account, add to another, log the transaction. If any step fails, no money is lost.
+- **Order Processing:** Charge customer, reduce inventory, create order record. If payment fails, inventory isn&apos;t reduced.
+- **User Registration:** Create account, profile, send email. If any step fails, no partial user is created.
+
+### How It Works
+1. Akron starts a transaction when you enter the `with db.transaction()` block.
+2. If all operations succeed, changes are committed.
+3. If any operation fails, Akron automatically rolls back all changes.
+
+### Best Practices
+- Use transactions for any set of operations that must succeed together.
+- Don&apos;t use transactions for simple, single-step reads or writes.
