@@ -299,7 +299,7 @@ class SchemaManager:
         return datetime.now().isoformat()
 
 
-def create_default_schema(provider: str = "sqlite", database_url: str = "sqlite:///app.db") -> Dict[str, Any]:
+def create_default_schema(provider: str = "sqlite", database_url: str = "sqlite://app.db") -> Dict[str, Any]:
     """Create a default akron.json schema template."""
     return {
         "database": {

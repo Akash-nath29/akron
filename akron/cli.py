@@ -66,7 +66,7 @@ def handle_db_init(args):
         database_url = args.url
     else:
         if args.provider == "sqlite":
-            database_url = "sqlite:///app.db"
+            database_url = "sqlite://app.db"
         elif args.provider == "mysql":
             database_url = "mysql://user:password@localhost:3306/database"
         elif args.provider == "postgresql":
