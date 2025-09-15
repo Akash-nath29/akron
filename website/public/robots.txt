@@ -1,4 +1,26 @@
 User-agent: *
 Allow: /
 
-Sitemap: /sitemap.xml
+# Sitemap
+Sitemap: https://tryakron.tech//sitemap.xml
+
+# Optimize crawling
+Crawl-delay: 1
+
+# Allow all search engines to index the site
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+# Block unnecessary files
+Disallow: /*.json$
+Disallow: /_next/
+Disallow: /api/

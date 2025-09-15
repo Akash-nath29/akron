@@ -1,5 +1,35 @@
 import { DocsLayout, PreCodeBlock, OutputBlock, CodeBlock } from "../../components/DocsLayout";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Documentation - Complete Guide to Akron ORM",
+  description: "Complete documentation for Akron ORM - the universal Python ORM. Learn how to use SQLite, MySQL, PostgreSQL, and MongoDB with a unified API, type safety, and automatic migrations.",
+  keywords: [
+    "Akron ORM documentation",
+    "Python ORM tutorial", 
+    "SQLite Python guide",
+    "MySQL Python ORM",
+    "PostgreSQL Python",
+    "MongoDB Python ORM",
+    "ORM examples",
+    "Database migration guide",
+    "Type-safe database",
+    "Python database tutorial"
+  ],
+  openGraph: {
+    title: "Akron ORM Documentation - Complete Guide",
+    description: "Complete documentation for Akron ORM - the universal Python ORM. Learn how to use SQLite, MySQL, PostgreSQL, and MongoDB with a unified API.",
+    type: "article",
+    images: ["/logo.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Akron ORM Documentation",
+    description: "Complete guide to using Akron ORM - the universal Python ORM supporting multiple databases.",
+    images: ["/logo.png"],
+  },
+};
 
 export default function DocsPage() {
   return (

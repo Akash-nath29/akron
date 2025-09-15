@@ -1,22 +1,52 @@
 {
-  "name": "Akron ORM",
-  "short_name": "Akron",
-  "description": "Universal Python ORM for modern applications",
+  "name": "Akron ORM - Universal Python ORM",
+  "short_name": "Akron ORM",
+  "description": "Universal, framework-independent ORM for Python. Supports SQLite, MySQL, PostgreSQL, and MongoDB with type safety and automatic migrations.",
+  "categories": ["developer", "programming", "database", "python"],
   "icons": [
     {
       "src": "/logo.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/logo.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
-  "theme_color": "#ffffff",
+  "theme_color": "#f97316",
   "background_color": "#ffffff",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "start_url": "/",
-  "scope": "/"
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr"
 }
