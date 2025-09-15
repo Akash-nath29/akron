@@ -11,7 +11,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Akash Nath",
     author_email="anath5440@gmail.com",
-    url="https://github.com/Akash-nath29/akron",
+    url="https://github.com/AkronORM/Akron",
     license="MIT",
     packages=find_packages(),
     install_requires=[

@@ -756,7 +756,7 @@ We welcome contributions! Please feel free to:
 
 ```bash
 # Clone the repository
-git clone https://github.com/Akash-nath29/akron.git
+git clone https://github.com/AkronORM/Akron.git
 cd akron
 
 # Install development dependencies
@@ -778,9 +778,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🔗 Links
 
 - **PyPI Package**: https://pypi.org/project/akron/
-- **GitHub Repository**: https://github.com/Akash-nath29/akron
+- **GitHub Repository**: https://github.com/AkronORM/Akron
 - **Documentation**: https://akron-website.vercel.app/docs
-- **Issues & Support**: https://github.com/Akash-nath29/akron/issues
+- **Issues & Support**: https://github.com/AkronORM/Akron/issues
 
 ---
 
