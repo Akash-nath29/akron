@@ -16,10 +16,19 @@ export const metadata: Metadata = {
   title: "Akron ORM - Universal Python ORM",
   description: "Universal, framework-independent ORM for Python. Simple, lightweight, and developer-friendly. Supports SQLite, MySQL, PostgreSQL, and MongoDB.",
   icons: {
-    icon: "/logo.png",
+    icon: [
+      { url: "/logo.png", sizes: "any", type: "image/png" },
+      { url: "/logo.png", sizes: "16x16", type: "image/png" },
+      { url: "/logo.png", sizes: "32x32", type: "image/png" },
+    ],
     shortcut: "/logo.png",
     apple: "/logo.png",
+    other: {
+      rel: "apple-touch-icon-precomposed",
+      url: "/logo.png",
+    },
   },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
@@ -29,6 +38,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" type="image/png" href="/logo.png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
+        <meta name="theme-color" content="#ffffff" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
